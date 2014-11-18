@@ -1,6 +1,6 @@
 // $Id$
 /*
-* Mandel.js v1.1
+* Mandel.js v1.2
 * created by matortheeternal
 * 04/16/2014
 *
@@ -14,8 +14,8 @@
 *   sponge: Makes a Menger Sponge.  Iteration size 1-6.
 *   dust: Makes Cantor Dust.  Iteration size 1-6.
 *   koch: Makes a Quadratic Koch Surface.  Iteration size 1-6.
-*   cross: Makes a Greek Cross Fractal.  Iteration size 1-6.
-*   hilbert: Makes a Hilbert Curve.  Iteration size 1-5.
+*   cross: Makes a Greek Cross Fractal.  Iteration size 1-7.
+*   hilbert: Makes a Hilbert Curve.  Iteration size 1-7.
 *   octahedron: Makes an Octahedron Fractal.  Iteration size 1-5.
 *   dodecahedron: working...
 *   box: Makes a mandelbox.  Size is dimensional value (5-255).
@@ -95,7 +95,7 @@ var typehelp = ["\n"+cg+"Generates a Menger Sponge. \n"+
                 "\n"+cg+"Generates a 3d Hilbert Curve. \n"+
                 cg+"Usage: /cs mandel <blocktype> hilbert <iteration>\n"+
                 cg+bthelp+
-                cg+ithelp+"6\n"+
+                cg+ithelp+"8\n"+
                 cg+"e.g. /cs mandel grass hilbert 3, /cs mandel 48 hilbert 4",
                
                 "\n"+cg+"Generates an Octahedron Fractal. \n"+
@@ -364,7 +364,7 @@ function main() {
         cross(d, 0, 0, 0, 3, 0);
     }
     else if (mandeltype == "hilbert") {
-        if (d > 5) {
+        if (d > 7) {
             context.print("Can't generate a level "+d+" Hilbert Curve!  (Too big)");
             return;
         }
@@ -399,14 +399,6 @@ function main() {
         context.print("Scale = "+d+"x"+d+"x"+d);
         dodecahedron(d, 0, 0, 0);
     }
-    /*else if (mandeltype == "turtle") {
-        if (d > 6) {
-            context.print("Can't generate a level "+d+" Hilbert Curve!  (Too big)");
-            return;
-        }
-        context.print("Generating a level "+d+" Hilbert Curve... \n");
-        hilbertTurtle(d);
-    }*/
     else if (mandeltype == "bulb") {
         if (d > 255) {
             context.print("Can't generate a "+d+"x"+d+"x"+d+" Mandelbulb!  (Too big)");
@@ -959,220 +951,116 @@ function dodecahedron(d0, wOffset, hOffset, lOffset) {
         var y = y + 2*ri;
     }
 }
- 
-// hilbert curve rotation functions
-    // rotate around the x-axis in the positive y direction
-    function xp(s) {
-        s = s.split("F").join("."); // forward becomes down
-        s = s.split("B").join("^"); // backward becomes up
-        s = s.split("D").join("B"); // down becomes backward
-        s = s.split("U").join("F"); // up becomes forward
-        // return to standard notation
-        s = s.split("^").join("U");
-        s = s.split(".").join("D");
-        return s;
-    }
-   
-    // rotate around the x-axis in the negative y direction
-    function xn(s) {
-        s = s.split("F").join("^"); // forward becomes up
-        s = s.split("B").join("."); // backward becomes down
-        s = s.split("D").join("F"); // down becomes forward
-        s = s.split("U").join("B"); // up becomes backward
-        // return to standard notation
-        s = s.split("^").join("U");
-        s = s.split(".").join("D");
-        return s;
-    }
-   
-    // rotate around the y-axis in the positive x direction
-    function yp(s) {
-        s = s.split("F").join("<"); // forward becomes left
-        s = s.split("B").join(">"); // backward becomes right
-        s = s.split("R").join("F"); // right becomes forward
-        s = s.split("L").join("B"); // left becomes backward
-        // return to standard notation
-        s = s.split("<").join("L");
-        s = s.split(">").join("R");
-        return s;
-    }
-   
-    // rotate around the y-axis in the negative x direction
-    function yn(s) {
-        s = s.split("F").join(">"); // forward becomes right
-        s = s.split("B").join("<"); // backward becomes left
-        s = s.split("R").join("B"); // right becomes backward
-        s = s.split("L").join("F"); // left becomes forward
-        // return to standard notation
-        s = s.split("<").join("L");
-        s = s.split(">").join("R");
-        return s;
-    }
-   
-    // rotate around the z axis in the positive x direction
-    function zp(s) {
-        s = s.split("U").join("<"); // up becomes left
-        s = s.split("D").join(">"); // down becomes right
-        s = s.split("R").join("D"); // right becomes down
-        s = s.split("L").join("U"); // left becomes up
-        // return to standard notation
-        s = s.split(">").join("R");
-        s = s.split("<").join("L");
-        return s;
-    }
-   
-    // rotate around the z axis in the negative x direction
-    function zn(s) {
-        s = s.split("U").join(">"); // up becomes right
-        s = s.split("D").join("<"); // down becomes left
-        s = s.split("R").join("U"); // right becomes up
-        s = s.split("L").join("D"); // left becomes down
-        // return to standard notation
-        s = s.split(">").join("R");
-        s = s.split("<").join("L");
-        return s;
-    }
-   
-    // reverse string
-    function rv(s) {
-        s = s.split("").reverse().join("");
-        s = s.split("B").join("+");
-        s = s.split("L").join(">");
-        s = s.split("U").join(".");
-        s = s.split("F").join("B");
-        s = s.split("R").join("L");
-        s = s.split("D").join("U");
-        // return to standard notation
-        s = s.split("+").join("F");
-        s = s.split(">").join("R");
-        s = s.split(".").join("D");
-        return s;
-    }
-// end of rotation functions
- 
-// hilbert curve resolve function (turns string into function call and result)
-function resolve(s) {
-    var func = s.substring(0, 2);
-    var input = s.substring(3, s.length);
-    if (func == "xp")
-        return xp(input);
-    if (func == "xn")
-        return xn(input);
-    if (func == "yp")
-        return yp(input);
-    if (func == "yn")
-        return yn(input);
-    if (func == "zp")
-        return zp(input);
-    if (func == "zn")
-        return zn(input);
-    if (func == "rv")
-        return rv(input);
-}
- 
-// making a 3d hilbert curve
+
 function hilbert(d0) {
-    var hScale = 2;
-    var A = "F R B D F L B";
-    var curve = "A";
-    var rs = "rv(xp(!)) F zp(!) R ! B yn(xn(!)) D yn(xp(!)) F ! L zn(!) B rv(xn(!))";
-   
-    var iterations = 1;
-    // iterate generation string
-    while (iterations < d0) {
-        curve = curve.replace(/\A/g, rs);
-        curve = curve.replace(/\!/g, "A");
-        iterations++;
+    var hScale = 3;
+    var curve = "X";
+    var axiom = "^<YF^<YFY-F^>>YFY&F+>>YFY-F>Y->";
+    
+    // construct string representation of curve
+    for (var i = 0; i < d0; i++) {
+        curve = curve.replace(/\X/g, axiom);
+        curve = curve.replace(/\Y/g, "X");
     }
-   
-    // evaluate functions and axioms in generation string
-    curve = curve.replace(/\A/g, A);
-    //writer.write("curve is: \n\n"+curve);
-    //writer.write("\n\n");
-    while ((curve.indexOf("(") > 0) && (curve.indexOf(")") > 0)) {
-        var s1 = curve.substring(0, curve.indexOf(")"));
-        //writer.write("  s1 = "+s1+"\n");
-        s2 = s1.substring(s1.lastIndexOf("("), s1.length);
-        //writer.write("  s1 = "+s1+"\n");
-        var s3 = curve.substr(s1.lastIndexOf(s2) - 2, 3 + s2.length);
-        //writer.write("  "+ s3 + " resolves to: " + resolve(s3.substr(0, s3.length - 1)) + "!"+"\n");
-        curve = curve.replace(s3, resolve(s3.substr(0, s3.length - 1)));
-    }
-    writer.write("\n\ncurve is: \n\n"+curve);
-   
-    // calculate maximum height
-    var hMax = hScale;
-    for (var i = 1; i < d0; i++)
-        hMax = 2 * hMax + hScale;
-    // make curve
-    var w = region.getMinimumPoint().getX();
-    var h = region.getMinimumPoint().getY() + Math.floor(hMax) + 2;
-    var l = region.getMinimumPoint().getZ();
-    var vec = new Vector(w, h, l);
+    //context.print(curve);
+    
+    // initialize xyz
+    var x = region.getMinimumPoint().getX();
+    var y = region.getMinimumPoint().getY() + 2;
+    var z = region.getMinimumPoint().getZ();
+    
+    // place block for iteration 0
+    var vec = new Vector(x,y,z);
     blocks.setBlock(vec, blocktype);
     volume++;
+    
+    // initialize our up and forward vectors
+    var xaxis = new Vector(1,0,0);
+    var rot = [
+        [1,0,0],
+        [0,1,0],
+        [0,0,1]
+    ];
+    
+    // traverse curve
+    var r90 = d2r(90);
+    var rn90 = d2r(-90);
     for (var i = 0; i < curve.length; i++) {
-        if (curve.charAt(i) == ' ')
-            continue;
-        if (curve.charAt(i) == 'F') {
-            for (var j = 0; j < hScale; j++) {
-                w++;
-                vec = Vector(w, h, l);
-                blocks.setBlock(vec, blocktype);
-                volume++;
-                if (volume % 10000 == 0)
-                    context.print("    "+volume+" blocks placed... \n");
-            }
-        }
-        if (curve.charAt(i) == 'B') {
-            for (var j = 0; j < hScale; j++) {
-                w--;
-                vec = Vector(w, h, l);
-                blocks.setBlock(vec, blocktype);
-                volume++;
-                if (volume % 10000 == 0)
-                    context.print("    "+volume+" blocks placed... \n");
-            }
-        }
-        if (curve.charAt(i) == 'L') {
-            for (var j = 0; j < hScale; j++) {
-                l--;
-                vec = Vector(w, h, l);
-                blocks.setBlock(vec, blocktype);
-                volume++;
-                if (volume % 10000 == 0)
-                    context.print("    "+volume+" blocks placed... \n");
-            }
-        }
-        if (curve.charAt(i) == 'R') {
-            for (var j = 0; j < hScale; j++) {
-                l++;
-                vec = Vector(w, h, l);
-                blocks.setBlock(vec, blocktype);
-                volume++;
-                if (volume % 10000 == 0)
-                    context.print("    "+volume+" blocks placed... \n");
-            }
-        }
-        if (curve.charAt(i) == 'U') {
-            for (var j = 0; j < hScale; j++) {
-                h++;
-                vec = Vector(w, h, l);
-                blocks.setBlock(vec, blocktype);
-                volume++;
-                if (volume % 10000 == 0)
-                    context.print("    "+volume+" blocks placed... \n");
-            }
-        }
-        if (curve.charAt(i) == 'D') {
-            for (var j = 0; j < hScale; j++) {
-                h--;
-                vec = Vector(w, h, l);
-                blocks.setBlock(vec, blocktype);
-                volume++;
-                if (volume % 10000 == 0)
-                    context.print("    "+volume+" blocks placed... \n");
-            }
+        var fw = vmultiply(rot, xaxis);
+        switch(curve.charAt(i)) {
+            case 'X':
+                // skip unexpanded axioms
+                break;
+            case 'F':
+                // draw forward
+                for (var j = 0; j < hScale - 1; j++) {
+                    vec = add(vec, fw);
+                    blocks.setBlock(vec, blocktype);
+                    volume++;
+                    if (volume % 10000 == 0)
+                        context.print("    "+volume+" blocks placed... \n");
+                }
+                break;
+            case '+':
+                // yaw(90)
+                var m = [
+                    [Math.cos(r90),0,Math.sin(r90),0],
+                    [0,1,0,0],
+                    [-Math.sin(r90),0,Math.cos(r90),0],
+                    [0,0,0,1]
+                ];
+                rot = matrixMultiply(rot, m);
+                break;
+            case '-':
+                // yaw(-90)
+                var m = [
+                    [Math.cos(rn90),0,Math.sin(rn90),0],
+                    [0,1,0,0],
+                    [-Math.sin(rn90),0,Math.cos(rn90),0],
+                    [0,0,0,1]
+                ];
+                rot = matrixMultiply(rot, m);
+                break;
+            case '^':
+                // pitch(90)
+                var m = [
+                    [Math.cos(r90),-Math.sin(r90),0,0],
+                    [Math.sin(r90),Math.cos(r90),0,0],
+                    [0,0,1,0],
+                    [0,0,0,1]
+                ];
+                rot = matrixMultiply(rot, m);
+                break;
+            case '&':
+                // pitch(-90)
+                var m = [
+                    [Math.cos(rn90),-Math.sin(rn90),0,0],
+                    [Math.sin(rn90),Math.cos(rn90),0,0],
+                    [0,0,1,0],
+                    [0,0,0,1]
+                ];
+                rot = matrixMultiply(rot, m);
+                break;
+            case '>':
+                // roll(90)
+                var m = [
+                    [1,0,0,0],
+                    [0,Math.cos(r90),-Math.sin(r90),0],
+                    [0,Math.sin(r90),Math.cos(r90),0],
+                    [0,0,0,1]
+                ];
+                rot = matrixMultiply(rot, m);
+                break;
+            case '<':
+                // roll(-90)
+                var m = [
+                    [1,0,0,0],
+                    [0,Math.cos(rn90),-Math.sin(rn90),0],
+                    [0,Math.sin(rn90),Math.cos(rn90),0],
+                    [0,0,0,1]
+                ];
+                rot = matrixMultiply(rot, m);
+                break;
         }
     }
 }
@@ -1188,15 +1076,15 @@ function matrixMultiply(a, b) {
     result[0][0] = a[0][0]*b[0][0] + a[0][1]*b[1][0] + a[0][2]*b[2][0];
     result[0][1] = a[0][0]*b[0][1] + a[0][1]*b[1][1] + a[0][2]*b[2][1];
     result[0][2] = a[0][0]*b[0][2] + a[0][1]*b[1][2] + a[0][2]*b[2][2];
- 
-    result[1][0] = a[2][1]*b[0][0] + a[1][1]*b[1][0] + a[1][2]*b[2][0];
-    result[1][1] = a[2][1]*b[0][1] + a[1][1]*b[1][1] + a[1][2]*b[2][1];
+    
+    result[1][0] = a[1][0]*b[0][0] + a[1][1]*b[1][0] + a[1][2]*b[2][0];
+    result[1][1] = a[1][0]*b[0][1] + a[1][1]*b[1][1] + a[1][2]*b[2][1];
     result[1][2] = a[1][0]*b[0][2] + a[1][1]*b[1][2] + a[1][2]*b[2][2];
-   
+    
     result[2][0] = a[2][0]*b[0][0] + a[2][1]*b[1][0] + a[2][2]*b[2][0];
     result[2][1] = a[2][0]*b[0][1] + a[2][1]*b[1][1] + a[2][2]*b[2][1];
     result[2][2] = a[2][0]*b[0][2] + a[2][1]*b[1][2] + a[2][2]*b[2][2];
-   
+    
     return result;
 }
  
@@ -1239,80 +1127,7 @@ function rot(m, dim, a, mode) {
         break;
     }
 }
- 
-// making a 3d hilbert curve with turtle method
-function hilbertTurtle(d0) {
-    /*var hScale = 3;
-    var curve = "A";
-    var rs = ".X>.F+X<F<AF.AFA";
-    var rss = "F>F>F.F.F<F<F++";
-   
-    var iterations = 0;
-    // iterate generation string
-    while (iterations < d0) {
-        curve = curve.replace(/\A/g, rs);
-        curve = curve.replace(/\X/g, rss);
-        curve = curve.replace(/\!/g, "A");
-        curve = curve.replace(/\@/g, "X");
-        iterations++;
-    }
-   
-    //curve = curve.replace(/\A/g, "^<F^<F-F^>>F&F->>F+F>->");
-    writer.write("curve is: \n\n"+curve);
-    writer.write("\n\n");
-   
-    // calculate maximum height
-    var hMax = hScale;
-    for (var i = 1; i < d0; i++)
-        hMax = 2 * hMax + 3;
-    // make curve
-    var w = region.getMinimumPoint().getX();
-    var h = region.getMinimumPoint().getY() + Math.floor(hMax) + 2;
-    var l = region.getMinimumPoint().getZ();
-    var vec = new Vector(w, h, l);
-    var orientation = new Vector(1,0,0);
-    blocks.setBlock(vec, blocktype);
-    volume++;
-    for (var i = 0; i < arg4; i++) {
-        // define axes
-        var xaxis = 0;
-        var yaxis = 0;
-        var zaxis = 0;
-        // writer
-        writer.write("Char = "+curve.charAt(i)+"  orientation = ("+orientation.getX()+","+orientation.getY()+","+orientation.getZ()+")\n");
-        // interpret F as DrawForward(hScale)
-        if (curve.charAt(i) == "F") {
-            for (var j = 0; j < hScale; j++) {
-               
-                vec = Vector(w, h, l);
-                blocks.setBlock(vec, blocktype);
-                volume++;
-                if (volume % 10000 == 0)
-                    context.print("    "+volume+" blocks placed... \n");
-            }
-        }
-        // interpret > as y-axis rotation +90
-        // interpret < as y-axis rotation -90
-        else if (curve.charAt(i) == "<")
-            orientation = rotate(orientation, 1, 90)
-        else if (curve.charAt(i) == ">")
-            orientation = rotate(orientation, 1, -90)
-        // interpret + as z-axis rotation +90
-        // interpret - as z-axis rotation -90
-        else if (curve.charAt(i) == "+")
-            orientation = rotate(orientation, 0, 90)
-        else if (curve.charAt(i) == "-")
-            orientation = rotate(orientation, 0, -90)
-        // interpret ^ as x-axis rotation +90
-        // interpret . as x-axis rotation -90
-        else if (curve.charAt(i) == "^")
-            orientation = rotate(orientation, 2, 90)
-        else if (curve.charAt(i) == ".")
-            orientation = rotate(orientation, 2, -90);
-    }
-    writer.close();*/
-}
- 
+
 // making a quick mandelbulb
 function bulb() {
     // set local variables
@@ -1622,7 +1437,18 @@ function rfc(x, y, z) {
 function d2r(degrees) {
     return (pi * degrees / 180);
 }
- 
+
+// multiply vector by matrix
+function vmultiply(m, v) {
+    var x = v.getX();
+    var y = v.getY();
+    var z = v.getZ();
+    return new Vector(
+        x*m[0][0] + y*m[0][1] + z*m[0][2], 
+        x*m[1][0] + y*m[1][1] + z*m[1][2], 
+        x*m[2][0] + y*m[2][1] + z*m[2][2]
+        );
+}
+
 // run main method
 main();
-
