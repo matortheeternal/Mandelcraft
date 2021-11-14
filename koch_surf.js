@@ -19,9 +19,9 @@ const redFont = "\u00a74";
 
 var volume = 0;
 
-let useage = "<block> <iterations>";
-useage += "block - name of block";
-useage += "iterations - size of fractal";
+let useage = "<block> <iterations>\n";
+useage += "block - name of block\n";
+useage += "iterations - size of fractal\n";
 
 context.checkArgs(1, 2, useage);
 main: {

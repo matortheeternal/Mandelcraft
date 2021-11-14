@@ -17,7 +17,7 @@ let iterations = argv[2];
 const cg = "\u00a7b";
 const cr = "\u00a74";
 let volume = 0;
-let useage = "Useage: /cs greek_cross <block> <iterations>\n";
+let useage = "/cs greek_cross <block> <iterations>\n";
 useage += "block - name of block\n";
 useage += "iterations to run\n";
 

@@ -17,11 +17,10 @@ importPackage(Packages.com.sk89q.worldedit.blocks);
 
 let session = context.remember();
 let origin = context.getPlayer().getBlockIn().toVector().toBlockPoint();
-let useage = "Useage /cs seirpinski_pyra <block> <iterations>\n";
+let useage = "/cs seirpinski_pyra <block> <iterations>\n";
 useage += "block - name of block\n";
 useage += "iterations - iterations of fractal\n";
-useage += "Note: known to not generate at player's y-level.";
-useage += "Top may not fully generate."
+useage += "Note: WIP top may be cut off from build limit.";
 
 var volume = 0;
 

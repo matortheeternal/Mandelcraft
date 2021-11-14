@@ -20,9 +20,9 @@ let origin = context.getPlayer().getBlockIn().toVector().toBlockPoint();
 let volume = 0; // tracks number of blocks placed
 
 let iterations = argv[2];
-let useage = "Useage: /cs octahedron <block> <iterations>\n";
-useage += "block - name of block to make fractal";
-useage += "iterations - iterations of fractal\n";
+let useage = "/cs octahedron <block> <iterations>\n";
+useage += "block - name of block to make fractal\n";
+useage += "iterations - iterations of fractal";
 
 context.checkArgs(1, 2, useage);
 main: {

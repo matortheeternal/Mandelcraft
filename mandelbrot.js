@@ -14,63 +14,38 @@ const origin = player.getBlockIn().toVector().toBlockPoint();
 const cyanFont = "\u00a7b";
 const redFont = "\u00a7c";
 
+let useage = "/cs mandelbrot <palette> <size> [maxIter] [flags]\n";
+useage += "mandelbrot help for help\n";
+useage += "mandelbrot def for definition\n";
+useage += "Arguments:\n";
+useage += "<palette> - a list of blocks, separated by commas or palette name\n";
+useage += "See palette for palette options.\n"
+useage += "<size> size of the fractal\n";
+useage += "limits: horizontal - 1 to 1024\n";
+useage += "vertical - 1 to 256 at y=0\n";
+useage += "[maxIter] Optional - maximum iterations to calculate a position\n";
+useage += "- defaults to 100";
+useage += "[flags] Optional - general modifiers\n";
+useage += "Flags:\n";
+useage += "[x] placed vertically - aligned to x axis\n";
+useage += "[z] placed vertically - aligned to z axis\n";
+
+let paletteList = ["rainbow",
+  "geode"
+];
+
+context.checkArgs(1, 4, useage);
 let palette = argv[1].split(",");
+context.print(palette[0]);
 
 if (palette.length < 2) {
-  switch (palette) {
-    case "rainbow":
-      palette = ["black_concrete",
-        "magenta_concrete",
-        "purple_concrete",
-        "blue_concrete",
-        "light_blue_concrete",
-        "cyan_concrete",
-        "warped_planks",
-        "green_concrete",
-        "lime_concrete",
-        "yellow_concrete",
-        "orange_concrete",
-        "red_concrete"
-      ];
-      break;
-
-    default:
-    palette = ["black_concrete",
-      "magenta_concrete",
-      "purple_concrete",
-      "blue_concrete",
-      "light_blue_concrete",
-      "cyan_concrete",
-      "warped_planks",
-      "green_concrete",
-      "lime_concrete",
-      "yellow_concrete",
-      "orange_concrete",
-      "red_concrete"
-    ];
-      break;
-  }
+  palette = getBlocksFromPalette(palette[0]);
 }
 
 const size = parseInt(argv[2]);
 const maxIter = argv[4] ? parseInt(argv[4]) : 100;
 
 let volume = 0;
-
-let useage = "<palette> <size> [maxIter] [flags]\n";
-useage += "mandelbrot help for help\n";
-useage += "mandelbrot def for definition\n";
-useage += "Arguments:\n";
-useage += "<palette> a list of blocks, separated by commas\n";
-useage += "<size> size of the fractal";
-useage += "limits: horizontal - 1 to 1024";
-useage += "vertical - 1 to 256 at y=0";
-useage += "[maxIter] Optional - maximum iterations to calculate a position";
-useage += "- defaults to 100";
-useage += "[flags] Optional - general modifiers\n";
-useage += "Flags:\n";
-useage += "[x] placed vertically - aligned to x axis\n";
-useage += "[z] placed vertically - aligned to z axis\n";
 
 if (argv.length > 2) flags = String(argv[3]);
 else flags = false;
@@ -82,7 +57,6 @@ if (flags) {
 }
 else alignX = alignZ = julia = false;
 
-context.checkArgs(1, 4, useage);
 main: {
   if (argv[1] == "def") {
     let definition = "Mandelbrot Set\n";
@@ -92,17 +66,40 @@ main: {
     context.print(definition);
     break main;
   }
+
   if (argv[1] == "help") {
-    let helpMesssge = "Palette must use block names separated by commas.\n";
-    helpMesssge += "Spaces are not allowed.\n";
-    helpMesssge += "ex. mandelbrot black_terracotta,red_terracotta 128\n";
+    let helpMessage = "Palette must use block names separated by commas.\n";
+    helpMessage += "Spaces are not allowed.\n";
+    helpMessage += "ex. mandelbrot black_terracotta,red_terracotta 128\n";
     helpMessage += "For palette options: mandelbrot palletes"
-    context.print(helpMesssge);
+    context.print(helpMessage);
     break main;
   }
+
   if (argv[1] == "palettes") {
-    let paletteList = "rainbow\n";
-    context.print(paletteList);
+    paletteList.forEach((item, _) => {
+      context.print(cyanFont + item);
+    });
+
+    if (argv[2]) {
+      if (paletteList.forEach((item, _) => {
+        if (argv[2] === item) {
+          return true;
+        }
+
+        return false;
+      })) {
+        context.print(cyanFont + " blocks for " + argv[2] + " palette");
+        let blockList = ", ".join(getBlocksFromPalette(argv[2]));
+        context.print(cyanFont + blockList);
+        break main;
+      } else {
+        context.print(redFont + argv[2] + " is not a valid palette.");
+      }
+
+    } else {
+
+    }
     break main;
   }
 
@@ -113,11 +110,13 @@ main: {
     context.print(redFont + "Invalid size, must be between 1-1024");
     break main;
   }
+
   if (originY < lowerBuildHeightLimit ||
     originY > upperBuildHeightLimit) {
     context.print(redFont + "Can't build here!");
     break main;
   }
+
   else if ((alignX || alignZ) && size + originY - 1 > upperBuildHeightLimit) {
     context.print(redFont + "Will not fit at this position.");
     context.print(redFont + "Note: try again at y="
@@ -151,6 +150,56 @@ main: {
   }
 }
 
+function getBlocksFromPalette(paletteName) {
+  switch (String(palette[0])) {
+    case paletteList[0]:
+      palette = [
+        "black_concrete",
+        "magenta_concrete",
+        "purple_concrete",
+        "blue_concrete",
+        "light_blue_concrete",
+        "cyan_concrete",
+        "warped_planks",
+        "green_concrete",
+        "lime_concrete",
+        "yellow_concrete",
+        "orange_concrete",
+        "red_concrete"
+      ];
+      break;
+
+    case paletteList[1]:
+      return [
+        "air",
+        "stone",
+        "deepslate",
+        "calcite",
+        "tuff",
+        "amethyst_block",
+        "budding_amethyst"
+      ];
+
+    default:
+      context.print(redFont
+        + paletteName
+        + " is not a palette, default [rainbow] selected.");
+      return ["black_concrete",
+        "magenta_concrete",
+        "purple_concrete",
+        "blue_concrete",
+        "light_blue_concrete",
+        "cyan_concrete",
+        "warped_planks",
+        "green_concrete",
+        "lime_concrete",
+        "yellow_concrete",
+        "orange_concrete",
+        "red_concrete"
+      ];
+  }
+}
+
 function mandelbrot(size, cx, cy) {
   for (var xi = 0; xi < size; xi++) {
     for (var yi = 0; yi < size; yi++) {
@@ -163,7 +212,7 @@ function mandelbrot(size, cx, cy) {
 
       if (julia) {
         x = xi / size * 3.3 - 1.65;
-        y = yi / size * -3.3 + 1.65;
+        y = yi / size * 3.3 + 1.65;
         c = complexNumber(cx, cy);
         z = complexNumber(x, y);
       }
@@ -199,7 +248,10 @@ function complexNumber(real, imag) {
 }
 
 function add(cnum1, cnum2) {
-  return { real: cnum1.real + cnum2.real, imag: cnum1.imag + cnum2.imag };
+  return {
+    real: cnum1.real + cnum2.real,
+    imag: cnum1.imag + cnum2.imag
+  };
 }
 
 function multi(cnum1, cnum2) {
